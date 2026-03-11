@@ -46,16 +46,58 @@
  */
 export function createFilter(field, operator, value) {
   // Your code here
+  const operators = [">", "<", ">=", "<=", "==="];
+  const falsy = () => {
+    return false;
+  };
+  if (!operators.includes(operator)) return falsy;
+  const checkFn = new Function("key", "value", `return key ${operator} value`);
+  const objBool = (obj) => {
+    return checkFn(obj[field], value);
+  };
+  return objBool;
 }
 
 export function createSorter(field, order = "asc") {
   // Your code here
+  const comparator = (a, b) => {
+    const valA = a[field];
+    const valB = b[field];
+
+    if (valA == null || valB == null) return 0;
+    if (typeof valA === "number" && typeof valB === "number") {
+      return order === "desc" ? valB - valA : valA - valB;
+    }
+    const strA = String(valA);
+    const strB = String(valB);
+    const strOrder = strA.localeCompare(strB, undefined, {
+      sensitivity: "base",
+      numeric: true,
+    });
+    return order === "desc" ? strOrder * -1 : strOrder;
+  };
+  return comparator;
 }
 
 export function createMapper(fields) {
   // Your code here
+  const filFunc = (obj) => {
+    if (!obj || typeof obj !== "object") return {};
+    const finalObj = fields.reduce((acc, curr) => {
+      if (curr in obj) acc[curr] = obj[curr];
+      return acc;
+    }, {});
+    return finalObj;
+  };
+
+  return filFunc;
 }
 
 export function applyOperations(data, ...operations) {
   // Your code here
+  if (!Array.isArray(data)) return [];
+  return operations.reduce((acc, curr) => {
+    if (typeof curr !== "function") return acc;
+    return curr(acc);
+  }, data);
 }

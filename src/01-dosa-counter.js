@@ -19,7 +19,7 @@
  *   - Agar type string nahi hai ya unknown type hai, return null
  *   - Agar quantity positive number nahi hai (<=0 ya NaN), return null
  *
- * @param {string} type - Dosa type
+ * @param {string} type - Dosa 
  * @param {number} [quantity=1] - Number of dosas
  * @param {boolean} [isSpicy=false] - Add spicy for Rs 10 extra
  * @returns {{ type: string, quantity: number, pricePerDosa: number, total: number } | null}
@@ -33,4 +33,28 @@
  */
 export function calculateDosaOrder(type, quantity = 1, isSpicy = false) {
   // Your code here
+
+  const dosaPrice = {
+    plain: 40,
+    masala: 60,
+    onion: 50,
+    butter: 70,
+    cheese: 80,
+    paper: 90
+  }
+
+  if (!Object.keys(dosaPrice).includes(type)) return null;
+  if (Number.isNaN(quantity) || quantity <= 0) return null;
+
+
+  const pricePerDosa = dosaPrice[type] + ((isSpicy) ? 10 : 0);
+  const total = pricePerDosa * quantity;
+
+  return {
+    type,
+    quantity,
+    pricePerDosa,
+    total
+  }
+
 }
